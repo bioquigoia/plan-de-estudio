@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Plan Bioquímica Interactivo</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; background: #fefefe; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    th { background: #e0e0e0; }
+    td.course { cursor: pointer; transition: 0.3s; }
+    td.completed { background-color: #b2f2bb; } /* verde pastel */
+    td.available { background-color: #a5d8ff; } /* celeste pastel */
+    td.locked { background-color: #fbb1bd; color: #888; } /* rosa pastel */
+    #progress-container { width: 100%; background: #ddd; border-radius: 5px; overflow: hidden; margin-top: 20px; }
+    #progress-bar { height: 20px; width: 0; background: #69db7c; transition: width 0.5s; }
+    #progress-text { text-align: center; margin-top: 5px; }
+    #final-message { font-size: 2em; color: #5f3dc4; text-align: center; display: none; margin-top: 20px; }
+    canvas#confetti-canvas { position: fixed; top:0; left:0; width:100%; height:100%; pointer-events: none; z-index: 1000; }
+  </style>
+</head>
+<body>
+  <h1>Plan Bioquímica Interactivo</h1>
+  <div id="progress-container">
+    <div id="progress-bar"></div>
+  </div>
+  <div id="progress-text">0%</div>
+  <div id="final-message">¡¡¡TE RECIBISTE!!! 🎓🎉</div>
+  <canvas id="confetti-canvas"></canvas>
+  <table id="malla-table">
+    <thead>
+      <tr id="years-row"></tr>
+      <tr id="semesters-row"></tr>
+    </thead>
+    <tbody id="courses-body"></tbody>
+  </table>
+
+<script>
+if (!localStorage.getItem("mallaData")) {
+  localStorage.setItem("mallaData", JSON.stringify([
+    // 
+    {
+      year: 1,
+      name: "Año 1 (CBC)",
+      semesters: [
+        {
+          name: "1er Cuatrimestre",
+          courses: [
+            { id: "matematica", name: "Matematica", requires: [] },
+            { id: "quimica", name: "Quimica", requires: [] },
+            { id: "sociedad_estado", name: "Sociedad y Estado", requires: [] }
+          ]
+        },
+        {
+          name: "2do Cuatrimestre",
+          courses: [
+            { id: "ipc", name: "IPC", requires: [] },
+            { id: "biologia", name: "Biología", requires: [] },
+            { id: "biofisica", name: "Biofísica", requires: [] }
+          ]
+        }
+      ]
+    },
+      {
+  	year: 2,
+  	name: "Año 2 (Ciclo Común)",
+ 	semesters: [
+    {
+      name: "1er Cuatrimestre",
+      courses: [
+        { id: "quimica_inorganica", name: "Química Inorgánica", requires: ["matematica", "quimica", "sociedad_estado", "ipc", "biologia", "biofisica"] },
+        { id: "matematica2", name: "Matemática", requires: ["matematica", "quimica", "sociedad_estado", "ipc", "biologia", "biofisica"] },
+        { id: "anatomia_histologia", name: "Anatomía e Histología", requires: ["matematica", "quimica", "sociedad_estado", "ipc", "biologia", "biofisica"] }
+      ]
+    },
+    {
+      name: "2do Cuatrimestre",
+      courses: [
+        { id: "fisica", name: "Física", requires: ["matematica"] },
+        { id: "biologia_cel_mol", name: "Biología Celular y Molecular", requires: ["anatomia_histologia"] },
+        { id: "quimica_organica1", name: "Química Orgánica 1", requires: ["quimica_inorganica"] }
+      ]
+    }
+  ]
+},
+{
+  year: 3,
+  name: "Año 3 (Ciclo Común)",
+  semesters: [
+    {
+      name: "1er Cuatrimestre",
+      courses: [
+        { id: "quimica_organica2", name: "Química Orgánica 2", requires: ["fisica", "quimica_organica1"] },
+        { id: "fisiologia", name: "Fisiología", requires: ["anatomia_histologia", "biologia_cel_mol"] },
+        { id: "quimica_analitica", name: "Química Analítica", requires: ["quimica_inorganica", "matematica2"] }
+      ]
+    },
+    {
+      name: "2do Cuatrimestre",
+      courses: [
+        { id: "fisicoquimica", name: "Fisicoquímica", requires: ["quimica_inorganica", "fisica"] },
+        { id: "quimica_instrumental", name: "Química Instrumental", requires: ["fisica", "quimica_analitica"] },
+        { id: "quimica_biologica", name: "Química Biológica", requires: ["biologia_cel_mol", "quimica_organica2"] }
+      ]
+    }
+  ]
+},
+{
+  year: 4,
+  name: "Año 4 (Ciclo Superior)",
+  semesters: [
+    {
+      name: "1er Cuatrimestre",
+      courses: [
+        { id: "fisiopatologia", name: "Fisiopatología", requires: ["fisiologia"] },
+        { id: "microbiologia", name: "Microbiología", requires: ["quimica_biologica"] },
+        { id: "quimica_biologica_superior", name: "Química Biológica Superior", requires: ["fisicoquimica", "quimica_instrumental", "quimica_biologica"] },
+        { id: "genetica_molecular", name: "Genética Molecular", requires: ["quimica_biologica"] }
+      ]
+    },
+    {
+      name: "2do Cuatrimestre",
+      courses: [
+        { id: "inmunologia", name: "Inmunología", requires: ["fisiologia", "microbiologia", "quimica_biologica"] },
+        { id: "farmacologia", name: "Farmacología", requires: ["fisiologia", "quimica_biologica", "fisiopatologia"] },
+        { id: "biotecnologia", name: "Biotecnología (BIM)", requires: ["microbiologia", "genetica_molecular"] },
+        { id: "virologia", name: "Virología (BIM)", requires: ["microbiologia", "genetica_molecular"] },
+        { id: "nutricion", name: "Nutrición", requires: ["fisiologia", "quimica_biologica", "fisiopatologia"] }
+      ]
+    }
+  ]
+},
+  {
+  year: 5,
+  name: "Año 5 (Ciclo Superior)",
+  semesters: [
+    {
+      name: "1er Cuatrimestre",
+      courses: [
+        { id: "microbiologia_clinica", name: "Microbiología Clínica", requires: ["fisiopatologia", "microbiologia", "inmunologia", "virologia"] },
+        { id: "bioquímica_clinica1", name: "Bioquímica Clínica 1", requires: ["quimica_biologica", "fisiopatologia", "quimica_biologica_superior", "inmunologia"] },
+        { id: "practica_profesional_bioquimica_interna", name: "Práctica Profesional Interna", requires: ["fisiopatologia", "microbiologia", "inmunologia", "virologia", "quimica_biologica", "fisiopatologia", "quimica_biologica_superior", "inmunologia"] },
+      ]
+    },
+    {
+      name: "2do Cuatrimestre",
+      courses: [
+        { id: "toxicologia_y_quimica_legal", name: "Toxicología y Química Legal", requires: ["quimica_analitica", "química_instrumental", "quimica_biologica", "farmacologia"] },
+        { id: "bromatologia", name: "Bromatología", requires: ["microbiologia", "nutricion"] },
+        { id: "bioquimica_de_metabolopatias", name: "Bioquímica de Metabolopatías (BIM)", requires: ["quimica_biologica", "fisiopatologia"] },
+        { id: "genetica_forense", name: "Genética Forense (BIM)", requires: ["genetica_molecular"] },
+        { id: "bioquímica_clinica_2", name: "Bioquímica Clínica 2", requires: ["quimica_clinica1", "quimica_biologica_superior", "fisiopatologia"] }
+      ]
+    }
+  ]
+},
+{
+  year: 6,
+  name: "Año 6 (Practica Profesional)",
+  semesters: [
+    {
+      name: "1er Cuatrimestre",
+      courses: [
+        { id: "practica_profesional_bioquimica_externa", name: "Práctica Profesional Bioquímica Externa", requires: ["practica_profesional_bioquimica_interna"] },
+        { id: "asignatura_de_orientacion", name: "Asignatura de Orientación", requires: ["quimica_biologica", "fisiopatologia", "quimica_biologica_superior", "inmunologia", "practica_profesional_bioquimica_externa", "bioquímica_clinica_2","genetica_forense", "bioquimica_de_metabolopatias","bromatologia", "toxicologia_y_quimica_legal",practica_profesional_bioquimica_interna", "bioquímica_clinica1", "microbiologia_clinica"] },
+	{ id: "materias_electivas", name: "Materias Electivas", requires: [] },
+      ]
+    },
+      ]
+    }
+  ]
+},
+ {
+   year: 7,
+   name: "Materias Obligatorias",
+   semesters: [
+    {
+      name: "1er Cuatrimestre",
+      courses: [
+        { id: "ingles", name: "Ingles", requires: [] },
+        { id: "bioestadística", name: "Bioestadística", requires: ["matematica2"] },
+      ]
+    },
+    {
+      name: "2do Cuatrimestre",
+      courses: [
+        { id: "legislacion_bioq_ddhh", name: "Legislación Bioquímica DDHH", requires: ["fisiología", "quimica_biologica"] },
+        { id: "salud_publica", name: "Salud Pública", requires: ["microbiologia"] },
+        { id: "practica_social_educativa", name: "Práctica Social Educativa", requires: [] },
+]
+    }
+  ]
+},
+  ]));
+}
+
+const confettiCanvas = document.getElementById('confetti-canvas');
+const confetti = confettiCanvas.getContext('2d');
+let confettiPieces = [];
+
+function buildMalla() {
+  const data = JSON.parse(localStorage.getItem("mallaData"));
+  const completedCourses = JSON.parse(localStorage.getItem("completedCourses") || "[]");
+  const yearsRow = document.getElementById("years-row");
+  const semestersRow = document.getElementById("semesters-row");
+  const coursesBody = document.getElementById("courses-body");
+
+  yearsRow.innerHTML = "";
+  semestersRow.innerHTML = "";
+  coursesBody.innerHTML = "";
+
+  data.forEach(yearData => {
+    const yearCell = document.createElement("th");
+    yearCell.colSpan = yearData.semesters.length;
+    yearCell.textContent = yearData.name;
+    yearsRow.appendChild(yearCell);
+
+    yearData.semesters.forEach(semester => {
+      const semesterCell = document.createElement("th");
+      semesterCell.textContent = semester.name;
+      semestersRow.appendChild(semesterCell);
+    });
+  });
+
+  let maxCourses = Math.max(...data.map(y => Math.max(...y.semesters.map(s => s.courses.length))));
+
+  for (let i = 0; i < maxCourses; i++) {
+    const row = document.createElement("tr");
+    data.forEach(year => {
+      year.semesters.forEach(semester => {
+        const course = semester.courses[i];
+        const td = document.createElement("td");
+        td.classList.add("course");
+        if (course) {
+          if (completedCourses.includes(course.id)) {
+            td.classList.add("completed");
+          } else if (isCourseAvailable(course, completedCourses, year, data)) {
+            td.classList.add("available");
+          } else {
+            td.classList.add("locked");
+          }
+          td.textContent = course.name;
+          td.addEventListener("click", () => toggleCourse(course, td));
+        }
+        row.appendChild(td);
+      });
+    });
+    coursesBody.appendChild(row);
+  }
+  updateProgress();
+}
+
+function isCourseAvailable(course, completedCourses, yearData, allData) {
+  if (course.requiresYearCompleted) {
+    const prevYear = allData.find(y => y.year === course.requiresYearCompleted);
+    return prevYear && prevYear.semesters.every(s =>
+      s.courses.every(c => completedCourses.includes(c.id))
+    );
+  }
+  return course.requires.every(r => completedCourses.includes(r));
+}
+
+function toggleCourse(course, td) {
+  const completedCourses = JSON.parse(localStorage.getItem("completedCourses") || "[]");
+  if (completedCourses.includes(course.id)) {
+    const idx = completedCourses.indexOf(course.id);
+    completedCourses.splice(idx,1);
+  } else {
+    completedCourses.push(course.id);
+  }
+  localStorage.setItem("completedCourses", JSON.stringify(completedCourses));
+  buildMalla();
+  celebrateIfNeeded();
+}
+
+function updateProgress() {
+  const data = JSON.parse(localStorage.getItem("mallaData"));
+  const completedCourses = JSON.parse(localStorage.getItem("completedCourses") || "[]");
+  const totalCourses = data.reduce((sum, y) =>
+    sum + y.semesters.reduce((s, sem) => s + sem.courses.length,0),0);
+  const percent = Math.round((completedCourses.length / totalCourses) * 100);
+  document.getElementById("progress-bar").style.width = percent + "%";
+  document.getElementById("progress-text").textContent = percent + "%";
+  if (percent === 100) showGraduation();
+}
+
+function celebrateIfNeeded() {
+  const data = JSON.parse(localStorage.getItem("mallaData"));
+  const completedCourses = JSON.parse(localStorage.getItem("completedCourses") || "[]");
+  data.forEach(year => {
+    const allDone = year.semesters.every(s =>
+      s.courses.every(c => completedCourses.includes(c.id)));
+    if (allDone && !localStorage.getItem("celebrated" + year.year)) {
+      launchConfetti();
+      localStorage.setItem("celebrated" + year.year, "yes");
+    }
+  });
+}
+
+function showGraduation() {
+  document.getElementById("final-message").style.display = "block";
+  launchConfetti(true);
+}
+
+function launchConfetti(big) {
+  for (let i = 0; i < (big ? 300 : 100); i++) {
+    confettiPieces.push({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * -20,
+      size: Math.random() * 8 + 2,
+      speed: Math.random() * 3 + 2,
+      color: `hsl(${Math.random() * 360}, 100%, 70%)`
+    });
+  }
+}
+
+function animateConfetti() {
+  confetti.clearRect(0,0,confettiCanvas.width, confettiCanvas.height);
+  confetti.fillStyle = "rgba(255,255,255,0.5)";
+  confettiPieces.forEach(p => {
+    confetti.fillStyle = p.color;
+    confetti.fillRect(p.x, p.y, p.size, p.size);
+    p.y += p.speed;
+    if (p.y > window.innerHeight) {
+      p.y = Math.random() * -20;
+      p.x = Math.random() * window.innerWidth;
+    }
+  });
+  requestAnimationFrame(animateConfetti);
+}
+
+window.onload = () => {
+  confettiCanvas.width = window.innerWidth;
+  confettiCanvas.height = window.innerHeight;
+  buildMalla();
+  animateConfetti();
+};
+</script>
+</body>
+</html>
+
