@@ -38,7 +38,7 @@
 <script>
 if (!localStorage.getItem("mallaData")) {
   localStorage.setItem("mallaData", JSON.stringify([
-    // AÑOS, CUATRIMESTRES Y TODA LA MALLA
+    // 
     {
       year: 1,
       name: "Año 1 (CBC)",
@@ -61,84 +61,136 @@ if (!localStorage.getItem("mallaData")) {
         }
       ]
     },
-    // 
+      {
+  	year: 2,
+  	name: "Año 2 (Ciclo Común)",
+ 	semesters: [
     {
-      year: 2,
-      name: "Año 2 (Ciclo Común)",
-      semesters: [
-        {
-          name: "1er Cuatrimestre",
-          courses: [
-            { id: "Quimica Inorgánica", name: "Quimica Inorgánica", requires: [Año 1] },
-            { id: "Matematica", name: "Matematica", requires: [Año 1] },
-            { id: "Anatomia e Histología", name: "Anatomía e Histología", requires: [Año 1] }
-          ]
-        },
-        {
-          name: "2do Cuatrimestre",
-          courses: [
-            { id: "Fisica", name: "Fisica", requires: [Matematica] },
-            { id: "biologia", name: "Biología celular y Molecular", requires: [Anatomía e Histologia] },
-            { id: "Quimica Organica 1", name: "Química Orgánica 1", requires: [Quimica Inorgánica] }
- ]
-        }
+      name: "1er Cuatrimestre",
+      courses: [
+        { id: "quimica_inorganica", name: "Química Inorgánica", requires: ["matematica", "quimica", "sociedad_estado", "ipc", "biologia", "biofisica"] },
+        { id: "matematica2", name: "Matemática", requires: ["matematica", "quimica", "sociedad_estado", "ipc", "biologia", "biofisica"] },
+        { id: "anatomia_histologia", name: "Anatomía e Histología", requires: ["matematica", "quimica", "sociedad_estado", "ipc", "biologia", "biofisica"] }
       ]
     },
-    // 
     {
-      year: 3,
-      name: "Año 3 (Ciclo Común)",
-      semesters: [
-        {
-          name: "1er Cuatrimestre",
-          courses: [
-            { id: "Quimica Orgánica 2", name: "Quimica Orgánica 2", requires: [Fisica y Quimica Orgánica 1] },
-            { id: "Fisiología", name: "Fisiología", requires: [Anatomia e Histología y Biología celular y molecular] },
-            { id: "Quimica Analítica", name: "Quimica Analítica", requires: [Quimica Inorgánica y Matematica] }
-          ]
-        },
-        {
-          name: "2do Cuatrimestre",
-          courses: [
-            { id: "Fisicoquímica", name: "Fisicoquímica", requires: [Quimica Inorgánica y Fisica] },
-            { id: "Quimica Instrumental", name: "Quimica Industrial", requires: [Fisica y Quimica Analitica] },
-            { id: "Quimica Biologica", name: "Quimica Biologica", requires: [Biologia celular y molecular y Quimica Orgánica 2] }
-]
-        }
+      name: "2do Cuatrimestre",
+      courses: [
+        { id: "fisica", name: "Física", requires: ["matematica"] },
+        { id: "biologia_cel_mol", name: "Biología Celular y Molecular", requires: ["anatomia_histologia"] },
+        { id: "quimica_organica1", name: "Química Orgánica 1", requires: ["quimica_inorganica"] }
       ]
-    },
-    // 
-    
-
-
-
-
+    }
+  ]
+},
 {
-      Year: 4 ,
-      name: "Año 4 (Ciclo Superior)",
-      semesters: [
-        {
-          name: "1er Cuatrimestre",
-          courses: [
-            { id: "Quimica Orgánica 2", name: "Quimica Orgánica 2", requires: [Fisica y Quimica Orgánica 1] },
-            { id: "Fisiología", name: "Fisiología", requires: [Anatomia e Histología y Biología celular y molecular] },
-            { id: "Quimica Analítica", name: "Quimica Analítica", requires: [Quimica Inorgánica y Matematica] }
-          ]
-        },
-        {
-          name: "2do Cuatrimestre",
-          courses: [
-            { id: "Fisicoquímica", name: "Fisicoquímica", requires: [Quimica Inorgánica y Fisica] },
-            { id: "Quimica Instrumental", name: "Quimica Industrial", requires: [Fisica y Quimica Analitica] },
-            { id: "Quimica Biologica", name: "Quimica Biologica", requires: [Biologia celular y molecular y Quimica Orgánica 2] }
-
-
- 
-
-
-
-
-   // 
+  year: 3,
+  name: "Año 3 (Ciclo Común)",
+  semesters: [
+    {
+      name: "1er Cuatrimestre",
+      courses: [
+        { id: "quimica_organica2", name: "Química Orgánica 2", requires: ["fisica", "quimica_organica1"] },
+        { id: "fisiologia", name: "Fisiología", requires: ["anatomia_histologia", "biologia_cel_mol"] },
+        { id: "quimica_analitica", name: "Química Analítica", requires: ["quimica_inorganica", "matematica2"] }
+      ]
+    },
+    {
+      name: "2do Cuatrimestre",
+      courses: [
+        { id: "fisicoquimica", name: "Fisicoquímica", requires: ["quimica_inorganica", "fisica"] },
+        { id: "quimica_instrumental", name: "Química Instrumental", requires: ["fisica", "quimica_analitica"] },
+        { id: "quimica_biologica", name: "Química Biológica", requires: ["biologia_cel_mol", "quimica_organica2"] }
+      ]
+    }
+  ]
+},
+{
+  year: 4,
+  name: "Año 4 (Ciclo Superior)",
+  semesters: [
+    {
+      name: "1er Cuatrimestre",
+      courses: [
+        { id: "fisiopatologia", name: "Fisiopatología", requires: ["fisiologia"] },
+        { id: "microbiologia", name: "Microbiología", requires: ["quimica_biologica"] },
+        { id: "quimica_biologica_superior", name: "Química Biológica Superior", requires: ["fisicoquimica", "quimica_instrumental", "quimica_biologica"] },
+        { id: "genetica_molecular", name: "Genética Molecular", requires: ["quimica_biologica"] }
+      ]
+    },
+    {
+      name: "2do Cuatrimestre",
+      courses: [
+        { id: "inmunologia", name: "Inmunología", requires: ["fisiologia", "microbiologia", "quimica_biologica"] },
+        { id: "farmacologia", name: "Farmacología", requires: ["fisiologia", "quimica_biologica", "fisiopatologia"] },
+        { id: "biotecnologia", name: "Biotecnología (BIM)", requires: ["microbiologia", "genetica_molecular"] },
+        { id: "virologia", name: "Virología (BIM)", requires: ["microbiologia", "genetica_molecular"] },
+        { id: "nutricion", name: "Nutrición", requires: ["fisiologia", "quimica_biologica", "fisiopatologia"] }
+      ]
+    }
+  ]
+},
+  {
+  year: 5,
+  name: "Año 5 (Ciclo Superior)",
+  semesters: [
+    {
+      name: "1er Cuatrimestre",
+      courses: [
+        { id: "microbiologia_clinica", name: "Microbiología Clínica", requires: ["fisiopatologia", "microbiologia", "inmunologia", "virologia"] },
+        { id: "bioquímica_clinica1", name: "Bioquímica Clínica 1", requires: ["quimica_biologica", "fisiopatologia", "quimica_biologica_superior", "inmunologia"] },
+        { id: "practica_profesional_bioquimica_interna", name: "Práctica Profesional Interna", requires: ["fisiopatologia", "microbiologia", "inmunologia", "virologia", "quimica_biologica", "fisiopatologia", "quimica_biologica_superior", "inmunologia"] },
+      ]
+    },
+    {
+      name: "2do Cuatrimestre",
+      courses: [
+        { id: "toxicologia_y_quimica_legal", name: "Toxicología y Química Legal", requires: ["quimica_analitica", "química_instrumental", "quimica_biologica", "farmacologia"] },
+        { id: "bromatologia", name: "Bromatología", requires: ["microbiologia", "nutricion"] },
+        { id: "bioquimica_de_metabolopatias", name: "Bioquímica de Metabolopatías (BIM)", requires: ["quimica_biologica", "fisiopatologia"] },
+        { id: "genetica_forense", name: "Genética Forense (BIM)", requires: ["genetica_molecular"] },
+        { id: "bioquímica_clinica_2", name: "Bioquímica Clínica 2", requires: ["quimica_clinica1", "quimica_biologica_superior", "fisiopatologia"] }
+      ]
+    }
+  ]
+},
+{
+  year: 6,
+  name: "Año 6 (Practica Profesional)",
+  semesters: [
+    {
+      name: "1er Cuatrimestre",
+      courses: [
+        { id: "practica_profesional_bioquimica_externa", name: "Práctica Profesional Bioquímica Externa", requires: ["practica_profesional_bioquimica_interna"] },
+        { id: "asignatura_de_orientacion", name: "Asignatura de Orientación", requires: ["quimica_biologica", "fisiopatologia", "quimica_biologica_superior", "inmunologia", "practica_profesional_bioquimica_externa", "bioquímica_clinica_2","genetica_forense", "bioquimica_de_metabolopatias","bromatologia", "toxicologia_y_quimica_legal",practica_profesional_bioquimica_interna", "bioquímica_clinica1", "microbiologia_clinica"] },
+	{ id: "materias_electivas", name: "Materias Electivas", requires: [] },
+      ]
+    },
+      ]
+    }
+  ]
+},
+ {
+   year: 7,
+   name: "Materias Obligatorias",
+   semesters: [
+    {
+      name: "1er Cuatrimestre",
+      courses: [
+        { id: "ingles", name: "Ingles", requires: [] },
+        { id: "bioestadística", name: "Bioestadística", requires: ["matematica2"] },
+      ]
+    },
+    {
+      name: "2do Cuatrimestre",
+      courses: [
+        { id: "legislacion_bioq_ddhh", name: "Legislación Bioquímica DDHH", requires: ["fisiología", "quimica_biologica"] },
+        { id: "salud_publica", name: "Salud Pública", requires: ["microbiologia"] },
+        { id: "practica_social_educativa", name: "Práctica Social Educativa", requires: [] },
+]
+    }
+  ]
+},
   ]));
 }
 
